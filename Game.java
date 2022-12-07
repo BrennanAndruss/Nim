@@ -15,16 +15,18 @@ public class Game
     // constructors
     public Game()
     {
-        System.out.println("One-player or two-players?");
-        int ans = s.nextInt();
-        while (ans != 1 || ans != 2) {
+        System.out.println("1-player or 2-players? ");
+        String ans = s.nextLine();
+        while (!ans.equals("1") && !ans.equals("2")) {
             System.out.println("Type '1' or '2'.");
-            ans = s.nextInt();
+            ans = s.nextLine();
         }
         System.out.print("Enter a name for player 1: ");
-        player1 = new Player(s.nextLine());
-        if (ans == 1) {
+        String name = s.nextLine();
+        player1 = new Player(name);
+        if (ans.equals("1")) {
             autoPlay = true;
+            player2 = new Player("Computer");
         } else {
             System.out.print("Enter a name for player 2: ");
             player2 = new Player(s.nextLine());
@@ -33,10 +35,17 @@ public class Game
 
     // methods
     public void play() {
-        // randomly choose a first player
+        Player currentPlayer;
+        Player prevPlayer;
+
+        // Randomly choose a first player
         if ((int) (2 * Math.random()) == 0) {
+            currentPlayer = player1;
+            prevPlayer = player2;
             p1Turn = true;
         } else {
+            currentPlayer = player2;
+            prevPlayer = player1;
             p1Turn = false;
         }
 
@@ -44,37 +53,55 @@ public class Game
         while (Board.getNumPieces() > 1) {
             System.out.println("There are " + Board.getNumPieces() + " pieces.");
             
-            // Determine whose turn it is
-            if(p1Turn) {
-                System.out.print(player1.getName());
-            } else {
-                System.out.print(player2.getName());
+            // Prompt current player to remove a valid number of pieces
+            String input = "";
+            int num = 0;
+            if (!(currentPlayer == player2 && autoPlay))
+            {
+                boolean valid = false;
+                while((num > Board.getNumPieces()/2 || num <= 0) || !valid) 
+                {
+                    System.out.println("You can remove up to " + Board.getNumPieces()/2 + " pieces.");
+                    System.out.println("How many pieces would you like to remove? ");
+                    input = s.nextLine();
+                    try
+                    {
+                        num = Integer.parseInt(input);
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        System.out.println("Enter a valid integer.");
+                    }
+                }
+                Board.removePieces(num);
             }
-            
-            // Prompt user to remove a valid number pieces
-            System.out.print(", how many pieces would you like to remove? ");
-            int num = s.nextInt();
-            while (num > Board.getNumPieces()/2 || num <= 0 ){
-                System.out.println("You can only remove up to " + Board.getNumPieces()/2 + " pieces.");
-                System.out.print("How many pieces would you like to remove? ");
-                num = s.nextInt();
+            // Computer automatically makes a selection
+            else
+            {
+                num = currentPlayer.autoPlay();
+                System.out.println(currentPlayer.getName() + " removes " + num + " pieces.");
+                Board.removePieces(num);
             }
-            Board.removePieces(num);
             
             // Switch players
+            if (p1Turn)
+            {
+                currentPlayer = player2;
+                prevPlayer = player1;
+            }
+            else
+            {
+                currentPlayer = player1;
+                prevPlayer = player2;
+            }
             p1Turn = !p1Turn;
         }
 
-        // Determine winner and add score
-        if (!p1Turn) {
-            System.out.println(player2.getName() + " takes the last piece.");
-            System.out.println(player1.getName() + " is the winner.");
-            player1.addScore();
-        } else {
-            System.out.println(player1.getName() + " takes the last piece.");
-            System.out.println(player2.getName() + " is the winner.");
-            player2.addScore();
-        }
+        // Announce the winner and add score
+        System.out.println(currentPlayer.getName() + " takes the last piece.");
+        System.out.println(prevPlayer.getName() + " is the winner");
+        currentPlayer.addScore();
+
         System.out.println(player1.getName() + ": " + player1.getScore() + " points");
         System.out.println(player2.getName() + ": " + player2.getScore() + " points");
 

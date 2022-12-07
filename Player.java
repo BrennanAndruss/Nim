@@ -36,18 +36,16 @@ public class Player
     {
         // Take a number of pieces that puts the computer at an advantage state
         int num = 1;
-        int targetNum = 0;
         while (num < Board.getNumPieces()) {
-            targetNum = num;
             num = num * 2 + 1;
         }
-        int numRemove = Board.getNumPieces() - targetNum;
+        int numRemove = Board.getNumPieces() - ((num - 1)/2);
         
         // Take the ideal number of pieces if valid
-        if (numRemove > Board.getNumPieces()/2) {
+        if (numRemove <= Board.getNumPieces()/2) {
             return numRemove;
         } else {
-            return (int) (Math.random() * (Board.getNumPieces()/2));
+            return (int) (Math.random() * (Board.getNumPieces()/2)) + 1;
         }
     }
 }
