@@ -35,13 +35,14 @@ public class Player
     public int autoPlay()
     {
         // Take a number of pieces that puts the computer at an advantage state
+        // The AI should always win given that it starts first
         int num = 1;
         while (num < Board.getNumPieces()) {
             num = num * 2 + 1;
         }
         int numRemove = Board.getNumPieces() - ((num - 1)/2);
         
-        // Take the ideal number of pieces if valid
+        // Take the ideal number of pieces if possible
         if (numRemove <= Board.getNumPieces()/2) {
             return numRemove;
         } else {
