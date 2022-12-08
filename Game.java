@@ -9,7 +9,6 @@ public class Game
     private Player player1;
     private Player player2;
     private Scanner s = new Scanner(System.in);
-    private boolean p1Turn = true;
     private boolean autoPlay = false;
 
     // constructors
@@ -42,28 +41,27 @@ public class Game
         if ((int) (2 * Math.random()) == 0) {
             currentPlayer = player1;
             prevPlayer = player2;
-            p1Turn = true;
         } else {
             currentPlayer = player2;
             prevPlayer = player1;
-            p1Turn = false;
         }
 
         // Run the game until only one piece is left
         while (Board.getNumPieces() > 1) {
-            System.out.println("There are " + Board.getNumPieces() + " pieces.");
+        System.out.println("\nThere are " + Board.getNumPieces() + " pieces.");
             
             // Prompt current player to remove a valid number of pieces
             String input = "";
             int num = 0;
             if (!(currentPlayer == player2 && autoPlay))
             {
-                boolean valid = false;
-                while((num > Board.getNumPieces()/2 || num <= 0) || !valid) 
+                // Check for valid selection
+                while((num > Board.getNumPieces()/2 || num <= 0)) 
                 {
                     System.out.println("You can remove up to " + Board.getNumPieces()/2 + " pieces.");
-                    System.out.println("How many pieces would you like to remove? ");
+                    System.out.print(currentPlayer.getName() + ", how many pieces would you like to remove?: ");
                     input = s.nextLine();
+                    // Check for valid integer input
                     try
                     {
                         num = Integer.parseInt(input);
@@ -84,17 +82,9 @@ public class Game
             }
             
             // Switch players
-            if (p1Turn)
-            {
-                currentPlayer = player2;
-                prevPlayer = player1;
-            }
-            else
-            {
-                currentPlayer = player1;
-                prevPlayer = player2;
-            }
-            p1Turn = !p1Turn;
+            Player temp = prevPlayer;
+            prevPlayer = currentPlayer;
+            currentPlayer = temp;
         }
 
         // Announce the winner and add score
@@ -102,7 +92,7 @@ public class Game
         System.out.println(prevPlayer.getName() + " is the winner");
         currentPlayer.addScore();
 
-        System.out.println(player1.getName() + ": " + player1.getScore() + " points");
+        System.out.println("\n" + player1.getName() + ": " + player1.getScore() + " points");
         System.out.println(player2.getName() + ": " + player2.getScore() + " points");
 
         // Allow user to restart the game
@@ -121,7 +111,6 @@ public class Game
 
     private void playAgain() {
         Board.populate();
-        p1Turn = true;
         play();
     }
 }
