@@ -1,6 +1,7 @@
 /**
  * Game Class for the Game of Nim 
 */
+
 import java.util.Scanner;
 
 public class Game 
